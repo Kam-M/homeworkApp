@@ -1,7 +1,6 @@
 package com.marcol.homeworkApp.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
 
 @Entity
@@ -15,8 +14,10 @@ public class Details {
 
     @Column(name = "homeTown")
     private String homeTown;
+
     @Column(name = "shoeSize")
     private int shoeSize;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonBackReference

@@ -1,7 +1,6 @@
 package com.marcol.homeworkApp.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-
 import javax.persistence.*;
 
 @Entity
@@ -15,6 +14,7 @@ public class User {
 
     @Column(name="name")
     private String name;
+
     @Column(name="surname")
     private String surname;
 

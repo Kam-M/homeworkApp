@@ -9,11 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
-
 
     @Override
     public User createUser(User user) {
@@ -23,7 +22,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getUser(Long id) {
         Optional<User> userOpt = userRepository.findById(id);
-        if(userOpt.isPresent()){
+        if (userOpt.isPresent()) {
             return userOpt.get();
         }
         return null;
@@ -31,7 +30,15 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User updateUser(User user) {
-        return userRepository.save(user);
+        User userToUpdate = getUser(user.getId());
+        if(userToUpdate != null){
+            userToUpdate.setName(user.getName());
+            userToUpdate.setSurname(user.getSurname());
+            userToUpdate.getDetails().setHomeTown(user.getDetails().getHomeTown());
+            userToUpdate.getDetails().setShoeSize(user.getDetails().getShoeSize());
+            return userRepository.save(userToUpdate);
+        }
+        return null;
     }
 
     @Override

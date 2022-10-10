@@ -23,7 +23,11 @@ public class UserController {
     @GetMapping(produces = "application/json", path = "/user/{id}")
     public ResponseEntity<User> getUser(@PathVariable(value = "id") Long id) {
         System.out.println("Hello from getUser method!");
-        return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+        User userRetrieved = userService.getUser(id);
+        if(userRetrieved != null){
+            return new ResponseEntity<>(userService.getUser(id), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(produces = "application/json", path = "/users")

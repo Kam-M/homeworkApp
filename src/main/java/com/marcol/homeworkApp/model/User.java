@@ -8,7 +8,8 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    @SequenceGenerator(name = "generator", sequenceName = "generator", initialValue = 1)
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "generator")
     @Column(name = "id")
     private Long id;
 

@@ -32,7 +32,6 @@ public class UserRepositoryTest {
         //when
         User userSaved = userRepository.save(user);
         //then
-        long startTime = System.currentTimeMillis();
         assertThat(userSaved, is(notNullValue()));
     }
 

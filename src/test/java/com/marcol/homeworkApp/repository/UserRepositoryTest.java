@@ -1,30 +1,27 @@
 package com.marcol.homeworkApp.repository;
 
 import com.marcol.homeworkApp.model.User;
-import org.h2.tools.Server;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-@DataJpaTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 public class UserRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
 
-    @BeforeAll
-    static void setup() throws SQLException {
-        Server.createWebServer("-web", "-webAllowOthers", "-webPort", "8082", "-ifNotExists")
-                .start();
+    @AfterEach
+    void cleanUp(){
+        userRepository.deleteAll();
     }
+
     @Test
     void shouldSaveUserAndReturnUser(){
         //given
@@ -32,7 +29,7 @@ public class UserRepositoryTest {
         //when
         User userSaved = userRepository.save(user);
         //then
-        assertThat(userSaved, is(notNullValue()));
+        assertThat(userSaved).isNotNull();
     }
 
     @Test
@@ -43,7 +40,7 @@ public class UserRepositoryTest {
         //when
         Optional<User> userRetrieved = userRepository.findById(user.getId());
         //then
-        assertThat(userRetrieved, is(notNullValue()));
+        assertThat(userRetrieved).isNotNull();
     }
 
     @Test
@@ -58,7 +55,7 @@ public class UserRepositoryTest {
         //when
         List<User> users = userRepository.findAll();
         //then
-        assertThat(users.size(), equalTo(2));
+        assertThat(users.size()).isEqualTo(2);
     }
 
     @Test
@@ -73,7 +70,7 @@ public class UserRepositoryTest {
         //when
         User userUpdated = userRepository.save(userRetrieved.get());
         //then
-        assertThat(userUpdated.getName(), equalTo(nameUpdated));
+        assertThat(userUpdated.getName()).isEqualTo(nameUpdated);
     }
 
     @Test
@@ -84,7 +81,7 @@ public class UserRepositoryTest {
         //when
         userRepository.deleteById(userSaved.getId());
         //then
-        assertThat(userRepository.findAll().size(), equalTo(0));
+        assertThat(userRepository.findAll().size()).isEqualTo(0);
     }
 
     private User createUserForTest(){

@@ -22,12 +22,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest(value = UserController.class)
@@ -47,7 +44,7 @@ class UserControllerTest {
         User user = createUserForTest();
         when(userService.createUser(any(User.class))).thenReturn(user);
         String userToCreateInJSON = objectMapper.writeValueAsString(user);
-        String expectedResponseBody = "{\"name\":\"TestName\"}";
+        String expectedResponseBody = "{\"id\":null,\"name\":\"TestName\",\"surname\":\"TestSurname\",\"details\":null}";
         //when
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                                                         .post("/user")
@@ -58,15 +55,15 @@ class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.CREATED.value()));
-        assertEquals(expectedResponseBody, mockHttpServletResponse.getContentAsString(), false);
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(mockHttpServletResponse.getContentAsString()).contains(expectedResponseBody);
     }
 
     @Test
     void shouldReturnUserWhenGetInvoked() throws Exception {
         //given
         when(userService.getUser(any(Long.class))).thenReturn(createUserForTest());
-        String expectedResponseBody = "{\"name\":\"TestName\"}";
+        String expectedResponseBody = "{\"id\":null,\"name\":\"TestName\",\"surname\":\"TestSurname\",\"details\":null}";
         //when
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                                                         .get("/user/1/")
@@ -75,8 +72,8 @@ class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform((requestBuilder)).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.OK.value()));
-        assertEquals(expectedResponseBody, mockHttpServletResponse.getContentAsString(), false);
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(mockHttpServletResponse.getContentAsString()).contains(expectedResponseBody);
     }
 
     @Test
@@ -91,7 +88,7 @@ class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform((requestBuilder)).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -103,7 +100,8 @@ class UserControllerTest {
         userTwo.setName("TestName2");
         List<User> users = new ArrayList<>(Arrays.asList(userOne, userTwo));
         when(userService.getAllUsers()).thenReturn(users);
-        String expectedResponseBody = "[{\"name\":\"TestName1\"}, {\"name\":\"TestName2\"}]";
+        String expectedResponseBody = "[{\"id\":null,\"name\":\"TestName1\",\"surname\":\"TestSurname\"," +
+                "\"details\":null},{\"id\":null,\"name\":\"TestName2\",\"surname\":\"TestSurname\",\"details\":null}]";
         //when
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                                                         .get("/users")
@@ -112,8 +110,8 @@ class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform((requestBuilder)).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.OK.value()));
-        assertEquals(expectedResponseBody, mockHttpServletResponse.getContentAsString(), false);
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(mockHttpServletResponse.getContentAsString()).contains(expectedResponseBody);
     }
 
     @Test
@@ -123,7 +121,7 @@ class UserControllerTest {
         user.setName("TestNameUpdated");
         when(userService.updateUser(any(User.class))).thenReturn(user);
         String userToUpdateInJSON = objectMapper.writeValueAsString(user);
-        String expectedResponseBody = "{\"name\":\"TestNameUpdated\"}";
+        String expectedResponseBody = "{\"id\":null,\"name\":\"TestNameUpdated\",\"surname\":\"TestSurname\",\"details\":null}";
         //when
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                                                     .put("/user")
@@ -134,8 +132,8 @@ class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.OK.value()));
-        assertEquals(expectedResponseBody, mockHttpServletResponse.getContentAsString(), false);
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(mockHttpServletResponse.getContentAsString()).isEqualTo(expectedResponseBody);
     }
 
     @Test
@@ -155,7 +153,7 @@ class UserControllerTest {
         MvcResult mvcResult = mockMvc.perform(requestBuilder).andReturn();
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.NOT_FOUND.value()));
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     @Test
@@ -171,10 +169,9 @@ class UserControllerTest {
         MockHttpServletResponse mockHttpServletResponse = mvcResult.getResponse();
         //then
         verify(userService, times(1)).deleteUser(argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue(), equalTo(1L));
-        assertThat(mockHttpServletResponse.getStatus(), equalTo(HttpStatus.OK.value()));
-        assertThat(mockHttpServletResponse.getContentAsString(),
-                    equalTo(String.format(UserController.DELETE_MESSAGE, 1)));
+        assertThat(argumentCaptor.getValue()).isEqualTo(1L);
+        assertThat(mockHttpServletResponse.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(mockHttpServletResponse.getContentAsString()).isEqualTo(String.format(UserController.DELETE_MESSAGE, 1));
     }
 
     private User createUserForTest(){

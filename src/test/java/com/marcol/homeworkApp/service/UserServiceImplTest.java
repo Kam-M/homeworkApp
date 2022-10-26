@@ -14,9 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +35,7 @@ class UserServiceImplTest {
         //when
         User userCreated = userService.createUser(user);
         //then
-        assertThat(userCreated.getName(), equalTo(user.getName()));
+        assertThat(userCreated.getName()).isEqualTo(user.getName());
     }
 
     @Test
@@ -49,7 +47,7 @@ class UserServiceImplTest {
         //when
         User userRetrieved = userService.getUser(user.getId());
         //then
-        assertThat(userRetrieved.getName(), equalTo(user.getName()));
+        assertThat(userRetrieved.getName()).isEqualTo(user.getName());
     }
 
     @Test
@@ -59,7 +57,7 @@ class UserServiceImplTest {
         //when
         User userRetrieved = userService.getUser(any(Long.class));
         //then
-        assertNull(userRetrieved);
+        assertThat(userRetrieved).isNull();
     }
 
     @Test
@@ -74,7 +72,7 @@ class UserServiceImplTest {
         //when
         List<User> usersRetrieved = userService.getAllUsers();
         //then
-        assertThat(usersRetrieved.size(), equalTo(2));
+        assertThat(usersRetrieved.size()).isEqualTo(2);
     }
 
     @Test
@@ -89,7 +87,7 @@ class UserServiceImplTest {
         //when
         User userUpdated = userService.updateUser(userToUpdate);
         //then
-        assertNotNull(userUpdated);
+        assertThat(userUpdated).isNotNull();
     }
 
     @Test
@@ -103,7 +101,7 @@ class UserServiceImplTest {
         //when
         User userUpdated = userService.updateUser(userToUpdate);
         //then
-        assertNull(userUpdated);
+        assertThat(userUpdated).isNull();
     }
 
     @Test
@@ -116,7 +114,7 @@ class UserServiceImplTest {
         userService.deleteUser(user.getId());
         //then
         verify(userRepository, times(1)).deleteById(argumentCaptor.capture());
-        assertThat(user.getId(), equalTo(argumentCaptor.getValue()));
+        assertThat(user.getId()).isEqualTo(argumentCaptor.getValue());
     }
 
     private User createUserForTest(){

@@ -6,13 +6,25 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
-@RestController
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+
+@Controller
+@PropertySource("classpath:sample.properties")
 public class UserController {
+
+    @Autowired
+    Environment environment;
 
     public static final String METHOD_INVOKED = "%s method invoked.";
     public static final String DELETE_MESSAGE = "Delete operation has been performed. Requested id: %s";
@@ -71,5 +83,50 @@ public class UserController {
         System.out.println(String.format(METHOD_INVOKED, "deleteUser"));
         userService.deleteUser(id);
         return new ResponseEntity<>(String.format(DELETE_MESSAGE, id), HttpStatus.OK);
+    }
+
+    @GetMapping("/")
+    public String showUserList(Model model) {
+        String envWelcome = this.environment.getProperty("env.welcome");
+        List<User> users = userService.getAllUsers();
+        System.out.println("getALL USERS INVOKED!");
+        System.out.println("WE ARE ON " + envWelcome + " ENVIRONMENT!");
+        model.addAttribute("users", users);
+        model.addAttribute("envWelcome", envWelcome);
+        return "index";
+    }
+
+    @GetMapping("/showNewUserForm")
+    public String showNewEmployeeForm(Model model) {
+        User user = new User();
+        model.addAttribute("user", user);
+        return "new_user";
+    }
+
+    @PostMapping("/saveUser")
+    public String saveUser(@ModelAttribute("user") User user) {
+        user.getDetails().setUser(user);
+        userService.createUser(user);
+        return "redirect:/";
+    }
+
+    @GetMapping("/showFormForUpdate/{id}")
+    public String showFormForUpdate(@PathVariable(value = "id") long id, Model model) {
+        User user = userService.getUser(id);
+        model.addAttribute("user", user);
+        return "update_user";
+    }
+
+    @GetMapping("/deleteUser/{id}")
+    public String deleteUser(@PathVariable(value = "id") long id) {
+        this.userService.deleteUser(id);
+        return "redirect:/";
+    }
+
+    @PostMapping("/updateUser")
+    public String updateUserForm(@ModelAttribute("user") User user) {
+        user.getDetails().setUser(user);
+        userService.updateUser(user);
+        return "redirect:/";
     }
 }

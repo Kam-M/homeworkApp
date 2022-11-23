@@ -2,14 +2,16 @@ package com.marcol.homeworkApp.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User{
 
     @Id
-    @SequenceGenerator(name = "generator", sequenceName = "generator", initialValue = 1)
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "generator")
+  //@SequenceGenerator(name = "generator", sequenceName = "generator", initialValue = 1)
+    //@GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "generator")
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
